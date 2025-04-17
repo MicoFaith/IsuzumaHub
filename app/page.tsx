@@ -26,13 +26,17 @@ export default function Home() {
 
       {/* Home Section */}
       <div ref={homeRef} className="flex-1 relative min-h-screen">
-        <Image
-          src="/lab-image.jpg"
-          alt="Laboratory workspace with test tubes and equipment"
-          fill
-          priority
-          className="object-cover"
-        />
+      <video
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="object-cover w-full h-full absolute inset-0 z-[-1]"
+>
+  <source src="/lab-video.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
           <div className="text-center text-white p-8 max-w-4xl">
             <h1 className="text-5xl font-bold mb-6">Welcome to IsuzumaHub</h1>
