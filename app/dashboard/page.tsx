@@ -44,7 +44,7 @@ export default function UserDashboard() {
               <div className="font-medium">Blood Test</div>
               <div className="text-sm text-gray-500">Completed on May 15, 2023</div>
             </div>
-            <div className="border-l-4 border-yellow-500 pl-3">
+            <div className="border-l-4 border-blue-500 pl-3">
               <div className="font-medium">Urine Analysis</div>
               <div className="text-sm text-gray-500">Pending results</div>
             </div>

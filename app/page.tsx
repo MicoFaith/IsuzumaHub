@@ -66,41 +66,41 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-yellow-100 p-6 rounded-lg">
+            <div className="bg-blue-100 p-6 rounded-lg">
               <h3 className="text-xl font-semibold mb-4">Key Features</h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
-                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Sample tracking and management</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Inventory control and reagent management</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Equipment maintenance scheduling</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Comprehensive reporting and analytics</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>User management with role-based access</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Compliance with industry regulations</span>
@@ -112,7 +112,7 @@ export default function Home() {
       </div>
 
       {/* Gallery Section - Now after About */}
-      <div ref={galleryRef} className="py-16 px-4 bg-yellow-300">
+      <div ref={galleryRef} className="py-16 px-4 bg-blue-300">
         <div className="container mx-auto">
           <h2 className="text-5xl font-bold text-center text-white mb-16">Gallery</h2>
 

@@ -15,7 +15,7 @@ export function Header({ onHomeClick, onAboutClick, onGalleryClick }: HeaderProp
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="bg-yellow-300 text-black sticky top-0 z-50">
+    <header className="bg-blue-300 text-black sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <button onClick={onHomeClick} className="flex items-center">
@@ -45,7 +45,7 @@ export function Header({ onHomeClick, onAboutClick, onGalleryClick }: HeaderProp
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 bg-yellow-300">
+          <div className="px-2 pt-2 pb-3 space-y-1 bg-blue-300">
             <MobileNavButton onClick={onHomeClick}>Home</MobileNavButton>
             <MobileNavButton onClick={onAboutClick}>About Us</MobileNavButton>
             <MobileNavButton onClick={onGalleryClick}>Gallery</MobileNavButton>
@@ -79,7 +79,7 @@ function MobileNavButton({ onClick, children }: { onClick: () => void; children:
   return (
     <button
       onClick={onClick}
-      className="block w-full text-left px-3 py-2 text-base font-medium text-black hover:bg-yellow-400 rounded-md"
+      className="block w-full text-left px-3 py-2 text-base font-medium text-black hover:bg-blue-400 rounded-md"
     >
       {children}
     </button>
@@ -90,7 +90,7 @@ function MobileNavLink({ href, children }: { href: string; children: React.React
   return (
     <Link
       href={href}
-      className="block w-full text-left px-3 py-2 text-base font-medium text-black hover:bg-yellow-400 rounded-md"
+      className="block w-full text-left px-3 py-2 text-base font-medium text-black hover:bg-blue-400 rounded-md"
     >
       {children}
     </Link>
