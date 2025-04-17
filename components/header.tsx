@@ -30,6 +30,9 @@ export function Header({ onHomeClick, onAboutClick, onGalleryClick }: HeaderProp
             <NavButton onClick={onHomeClick}>Home</NavButton>
             <NavButton onClick={onAboutClick}>About Us</NavButton>
             <NavButton onClick={onGalleryClick}>Gallery</NavButton>
+            <NavLink href="/admin">Admin</NavLink>
+            <NavLink href="/auth">Users</NavLink>
+            <NavLink href="/employee">Employee</NavLink>
           </nav>
 
           {/* Mobile menu button */}
@@ -46,6 +49,9 @@ export function Header({ onHomeClick, onAboutClick, onGalleryClick }: HeaderProp
             <MobileNavButton onClick={onHomeClick}>Home</MobileNavButton>
             <MobileNavButton onClick={onAboutClick}>About Us</MobileNavButton>
             <MobileNavButton onClick={onGalleryClick}>Gallery</MobileNavButton>
+            <MobileNavLink href="/admin">Admin</MobileNavLink>
+            <MobileNavLink href="/auth">Users</MobileNavLink>
+            <MobileNavLink href="/employee">Employee</MobileNavLink>
           </div>
         </div>
       )}
@@ -80,3 +86,13 @@ function MobileNavButton({ onClick, children }: { onClick: () => void; children:
   )
 }
 
+function MobileNavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="block w-full text-left px-3 py-2 text-base font-medium text-black hover:bg-yellow-400 rounded-md"
+    >
+      {children}
+    </Link>
+  )
+}
