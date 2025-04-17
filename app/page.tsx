@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+
 import { useRef } from "react"
 import Image from "next/image"
 import { Header } from "@/components/header"
@@ -68,21 +69,42 @@ export default function Home() {
             <div className="bg-yellow-100 p-6 rounded-lg">
               <h3 className="text-xl font-semibold mb-4">Key Features</h3>
               <ul className="space-y-3">
-                {[
-                  "Sample tracking and management",
-                  "Inventory control and reagent management",
-                  "Equipment maintenance scheduling",
-                  "Comprehensive reporting and analytics",
-                  "User management with role-based access",
-                  "Compliance with industry regulations",
-                ].map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
-                      ✓
-                    </span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
+                <li className="flex items-start">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                    ✓
+                  </span>
+                  <span>Sample tracking and management</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                    ✓
+                  </span>
+                  <span>Inventory control and reagent management</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                    ✓
+                  </span>
+                  <span>Equipment maintenance scheduling</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                    ✓
+                  </span>
+                  <span>Comprehensive reporting and analytics</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                    ✓
+                  </span>
+                  <span>User management with role-based access</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                    ✓
+                  </span>
+                  <span>Compliance with industry regulations</span>
+                </li>
               </ul>
             </div>
           </div>
@@ -95,24 +117,71 @@ export default function Home() {
           <h2 className="text-5xl font-bold text-center text-white mb-16">Gallery</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { src: "/gallery-1.jpg", alt: "Scientist working in laboratory" },
-              { src: "/gallery-2.jpg", alt: "Laboratory microscope" },
-              { src: "/gallery-3.jpg", alt: "Scientist with lab equipment" },
-              { src: "/gallery-4.jpg", alt: "Scientist using microscope" },
-              { src: "/gallery-5.jpg", alt: "Clean room laboratory" },
-              { src: "/gallery-6.jpg", alt: "Laboratory samples and petri dishes" },
-            ].map((img, idx) => (
-              <div key={idx} className="overflow-hidden rounded-lg shadow-lg">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  width={500}
-                  height={350}
-                  className="w-full h-64 object-cover transition-transform hover:scale-105"
-                />
-              </div>
-            ))}
+            {/* Gallery Image 1 */}
+            <div className="overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src="/gallery-1.jpg"
+                alt="Scientist working in laboratory"
+                width={500}
+                height={350}
+                className="w-full h-64 object-cover transition-transform hover:scale-105"
+              />
+            </div>
+
+            {/* Gallery Image 2 */}
+            <div className="overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src="/gallery-2.jpg"
+                alt="Laboratory microscope"
+                width={500}
+                height={350}
+                className="w-full h-64 object-cover transition-transform hover:scale-105"
+              />
+            </div>
+
+            {/* Gallery Image 3 */}
+            <div className="overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src="/gallery-3.jpg"
+                alt="Scientist with lab equipment"
+                width={500}
+                height={350}
+                className="w-full h-64 object-cover transition-transform hover:scale-105"
+              />
+            </div>
+
+            {/* Gallery Image 4 */}
+            <div className="overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src="/gallery-4.jpg"
+                alt="Scientist using microscope"
+                width={500}
+                height={350}
+                className="w-full h-64 object-cover transition-transform hover:scale-105"
+              />
+            </div>
+
+            {/* Gallery Image 5 */}
+            <div className="overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src="/gallery-5.jpg"
+                alt="Clean room laboratory"
+                width={500}
+                height={350}
+                className="w-full h-64 object-cover transition-transform hover:scale-105"
+              />
+            </div>
+
+            {/* Gallery Image 6 */}
+            <div className="overflow-hidden rounded-lg shadow-lg">
+              <Image
+                src="/gallery-6.jpg"
+                alt="Laboratory samples and petri dishes"
+                width={500}
+                height={350}
+                className="w-full h-64 object-cover transition-transform hover:scale-105"
+              />
+            </div>
           </div>
         </div>
       </div>

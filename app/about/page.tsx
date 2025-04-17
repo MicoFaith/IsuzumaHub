@@ -1,27 +1,15 @@
-<<<<<<< HEAD
-import {Header} from "@/components/header"
-=======
 import { Header } from "@/components/header"
->>>>>>> 00619535c93a5e129c636900145b3177dfa1ad80
 
 export default function AboutPage() {
   return (
     <main className="min-h-screen flex flex-col">
       <Header />
       <div className="container mx-auto px-4 py-12">
-<<<<<<< HEAD
-        <h1 className="text-3xl font-bold mb-6">About IsuzumaHub</h1>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div>
-            <p className="text-lg mb-4">
-             IsuzumaHub is a comprehensive laboratory management system designed to streamline operations, manage
-=======
         <h1 className="text-3xl font-bold mb-6">About ODLMSlab</h1>
         <div className="grid md:grid-cols-2 gap-8">
           <div>
             <p className="text-lg mb-4">
               ODLMSlab is a comprehensive laboratory management system designed to streamline operations, manage
->>>>>>> 00619535c93a5e129c636900145b3177dfa1ad80
               samples, track inventory, and facilitate reporting for laboratories of all sizes.
             </p>
             <p className="text-lg mb-4">
@@ -29,11 +17,7 @@ export default function AboutPage() {
               tasks and providing a centralized platform for all laboratory data.
             </p>
             <p className="text-lg">
-<<<<<<< HEAD
-              Whether you're running a small research lab or managing a large-scale testing facility,IsuzumaHub provides
-=======
               Whether you're running a small research lab or managing a large-scale testing facility, ODLMSlab provides
->>>>>>> 00619535c93a5e129c636900145b3177dfa1ad80
               the tools you need to increase efficiency and maintain compliance.
             </p>
           </div>
