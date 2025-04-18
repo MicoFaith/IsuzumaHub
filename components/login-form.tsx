@@ -1,11 +1,11 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Home, Lightbulb } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
 
 interface LoginFormProps {
   title: string
@@ -14,21 +14,27 @@ interface LoginFormProps {
 
 export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) {
   const router = useRouter()
-  const [username, setUsername] = useState("")
+  const { login } = useAuth()
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setError("")
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, you would validate credentials and set auth tokens/cookies
-      console.log({ username, password, rememberMe })
+    const result = await login(email, password)
+    
+    if (result.success) {
       router.push(redirectTo)
-    }, 1000)
+    } else {
+      setError(result.error)
+    }
+    
+    setLoading(false)
   }
 
   return (
@@ -60,14 +66,21 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-xl text-gray-600 text-center mb-8">{title}</h2>
 
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="relative">
               <input
-                type="text"
-                placeholder="User Name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
+                required
               />
               <div className="absolute right-2 top-3 text-yellow-400">
                 <Lightbulb size={20} />
@@ -81,6 +94,7 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors"
+                required
               />
             </div>
 
@@ -134,7 +148,9 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
         </div>
 
         <div className="mt-6 text-center">
-          <button className="text-white hover:underline text-sm">FORGOT YOUR PASSWORD?</button>
+          <Link href="/forgot-password" className="text-white hover:underline text-sm">
+            FORGOT YOUR PASSWORD?
+          </Link>
         </div>
       </div>
     </div>
