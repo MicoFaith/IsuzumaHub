@@ -3,18 +3,20 @@
 import type React from "react"
 
 import { useState } from "react"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminLayout } from "@/components/admin-layout"
 import { useTheme } from "@/components/theme-context"
-import { Moon, Sun, Save, Bell, Clock, Globe } from "lucide-react"
+import { Moon, Sun, Save, Bell, Clock, Globe, Shield, Database } from "lucide-react"
 
-export default function SettingsPage() {
+export default function AdminSettingsPage() {
   const { theme, setTheme } = useTheme()
-  const [userName] = useState("John Doe")
-  const [userEmail] = useState("johndoe@example.com")
+  const [userName] = useState("Admin User")
+  const [userEmail] = useState("admin@isuzumahub.com")
   const [notifications, setNotifications] = useState(true)
   const [emailAlerts, setEmailAlerts] = useState(true)
   const [timezone, setTimezone] = useState("UTC")
   const [language, setLanguage] = useState("en")
+  const [backupFrequency, setBackupFrequency] = useState("daily")
+  const [securityLevel, setSecurityLevel] = useState("high")
   const [saving, setSaving] = useState(false)
 
   const handleSaveSettings = () => {
@@ -27,10 +29,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <DashboardLayout userName={userName} userEmail={userEmail} pageTitle="Settings">
+    <AdminLayout userName={userName} userEmail={userEmail} pageTitle="Settings">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Settings</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Admin Settings</h1>
 
           <div className="space-y-6">
             {/* Appearance */}
@@ -87,9 +89,9 @@ export default function SettingsPage() {
                       <Bell className="h-6 w-6 text-blue-500" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-800 dark:text-white">Push Notifications</p>
+                      <p className="font-medium text-gray-800 dark:text-white">System Notifications</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Receive notifications about your appointments
+                        Receive notifications about system events
                       </p>
                     </div>
                   </div>
@@ -111,7 +113,7 @@ export default function SettingsPage() {
                     <div>
                       <p className="font-medium text-gray-800 dark:text-white">Email Alerts</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Receive email notifications about your test results
+                        Receive email notifications about important events
                       </p>
                     </div>
                   </div>
@@ -128,6 +130,57 @@ export default function SettingsPage() {
               </div>
             </div>
 
+            {/* System Settings */}
+            <div>
+              <h2 className="text-lg font-medium text-gray-800 dark:text-white mb-4">System Settings</h2>
+              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="mr-4">
+                      <Database className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800 dark:text-white">Database Backup</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Set the frequency of automatic database backups
+                      </p>
+                    </div>
+                  </div>
+                  <select
+                    className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-700 dark:text-gray-300"
+                    value={backupFrequency}
+                    onChange={(e) => setBackupFrequency(e.target.value)}
+                  >
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="mr-4">
+                      <Shield className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-800 dark:text-white">Security Level</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Set the security level for the system</p>
+                    </div>
+                  </div>
+                  <select
+                    className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-700 dark:text-gray-300"
+                    value={securityLevel}
+                    onChange={(e) => setSecurityLevel(e.target.value)}
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="extreme">Extreme</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             {/* Regional Settings */}
             <div>
               <h2 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Regional Settings</h2>
@@ -139,9 +192,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-800 dark:text-white">Timezone</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Set your local timezone for accurate appointment times
-                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Set the system default timezone</p>
                     </div>
                   </div>
                   <select
@@ -163,7 +214,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-800 dark:text-white">Language</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Choose your preferred language</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Set the system default language</p>
                     </div>
                   </div>
                   <select
@@ -203,7 +254,7 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   )
 }
 

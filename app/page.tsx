@@ -35,7 +35,7 @@ export default function Home() {
     className="object-cover w-full h-full absolute top-0 left-0"
   />
 </div>
-
+<div>
         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
           <div className="text-center text-white p-8 max-w-4xl">
             <h1 className="text-5xl font-bold mb-6">Welcome to IsuzumaHub</h1>

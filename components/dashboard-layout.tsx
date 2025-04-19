@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import {
@@ -18,7 +18,12 @@ import {
   Search,
   LogOut,
   Cog,
+  Sun,
+  Moon,
+  ChevronDown,
 } from "lucide-react"
+import { useTheme } from "@/components/theme-context"
+import { ThemeSettings } from "@/components/theme-settings"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -31,6 +36,23 @@ export function DashboardLayout({ children, userName, userEmail, pageTitle = "Da
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  const [themeSettingsOpen, setThemeSettingsOpen] = useState(false)
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const profileDropdownRef = useRef<HTMLDivElement>(null)
+  const { theme, toggleTheme } = useTheme()
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   const handleLogout = () => {
     // In a real app, this would call the logout function from auth context
@@ -230,18 +252,58 @@ export function DashboardLayout({ children, userName, userEmail, pageTitle = "Da
             <span>{pageTitle}</span>
           </Link>
           <div className="ml-auto flex items-center space-x-4">
+            <button className="p-1" onClick={toggleTheme}>
+              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
             <button className="p-1">
               <Bell className="w-5 h-5" />
             </button>
-            <button className="p-1">
+            <button className="p-1" onClick={() => setThemeSettingsOpen(true)}>
               <Settings className="w-5 h-5" />
             </button>
+            <div className="relative" ref={profileDropdownRef}>
+              <button
+                className="flex items-center text-white focus:outline-none"
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              >
+                <User className="w-5 h-5 mr-1" />
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border dark:border-gray-700">
+                  <div className="py-1">
+                    <Link
+                      href="/dashboard/profile"
+                      className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/dashboard/settings"
+                      className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Cog className="w-4 h-4 mr-2" />
+                      Settings
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
         {/* Content Area */}
         <main className="flex-1 overflow-auto p-4 bg-gray-100">{children}</main>
       </div>
+      <ThemeSettings isOpen={themeSettingsOpen} onClose={() => setThemeSettingsOpen(false)} />
     </div>
   )
 }

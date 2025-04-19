@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import {
@@ -21,6 +21,7 @@ import {
   Layers,
   Sun,
   Moon,
+  ChevronDown,
 } from "lucide-react"
 import { useTheme } from "@/components/theme-context"
 import { ThemeSettings } from "@/components/theme-settings"
@@ -51,6 +52,22 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
     if (path !== "/dashboard/admin" && pathname.startsWith(path)) return true
     return false
   }
+
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
+  const profileDropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
@@ -278,6 +295,42 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
             <button className="p-1" onClick={() => setThemeSettingsOpen(true)}>
               <Settings className="w-5 h-5" />
             </button>
+            <div className="relative" ref={profileDropdownRef}>
+              <button
+                className="flex items-center text-white focus:outline-none"
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+              >
+                <User className="w-5 h-5 mr-1" />
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border dark:border-gray-700">
+                  <div className="py-1">
+                    <Link
+                      href="/dashboard/admin/profile"
+                      className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      My Profile
+                    </Link>
+                    <Link
+                      href="/dashboard/admin/settings"
+                      className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Cog className="w-4 h-4 mr-2" />
+                      Settings
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
