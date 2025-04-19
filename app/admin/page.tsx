@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client"
 
 import type React from "react"
@@ -126,4 +127,10 @@ export default function AdminLoginPage() {
       </div>
     </div>
   )
+=======
+import { LoginForm } from "@/components/login-form"
+
+export default function AdminLoginPage() {
+  return <LoginForm title="Sign In With Your Admin Account" redirectTo="/dashboard/admin" />
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
 }

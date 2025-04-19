@@ -1,6 +1,10 @@
 "use client"
 
 import type React from "react"
+<<<<<<< HEAD
+=======
+
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
 import { useRef } from "react"
 import Image from "next/image"
 import { Header } from "@/components/header"
@@ -25,6 +29,7 @@ export default function Home() {
 
       {/* Home Section */}
       <div ref={homeRef} className="flex-1 relative min-h-screen">
+<<<<<<< HEAD
         <video
           src="/lab-video.mp4"
           autoPlay
@@ -33,6 +38,18 @@ export default function Home() {
           playsInline
           className="object-cover w-full h-full absolute top-0 left-0"
         />
+=======
+      <video
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="object-cover w-full h-full absolute inset-0 z-[-1]"
+>
+  <source src="/lab-video.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
 
         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
           <div className="text-center text-white p-8 max-w-4xl">
@@ -45,7 +62,11 @@ export default function Home() {
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* About Section */}
+=======
+      {/* About Section - Now before Gallery */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
       <div ref={aboutRef} className="py-16 px-4 bg-white">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold mb-8 text-center">About IsuzumaHub</h2>
@@ -112,12 +133,20 @@ export default function Home() {
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* Gallery Section */}
+=======
+      {/* Gallery Section - Now after About */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
       <div ref={galleryRef} className="py-16 px-4 bg-blue-300">
         <div className="container mx-auto">
           <h2 className="text-5xl font-bold text-center text-white mb-16">Gallery</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+<<<<<<< HEAD
+=======
+            {/* Gallery Image 1 */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-1.jpg"
@@ -127,6 +156,11 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
+<<<<<<< HEAD
+=======
+
+            {/* Gallery Image 2 */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-2.jpg"
@@ -136,6 +170,11 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
+<<<<<<< HEAD
+=======
+
+            {/* Gallery Image 3 */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-3.jpg"
@@ -145,6 +184,11 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
+<<<<<<< HEAD
+=======
+
+            {/* Gallery Image 4 */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-4.jpg"
@@ -154,6 +198,11 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
+<<<<<<< HEAD
+=======
+
+            {/* Gallery Image 5 */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-5.jpg"
@@ -163,6 +212,11 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
+<<<<<<< HEAD
+=======
+
+            {/* Gallery Image 6 */}
+>>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-6.jpg"
