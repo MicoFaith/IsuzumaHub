@@ -1,10 +1,7 @@
 "use client"
 
 import type React from "react"
-<<<<<<< HEAD
-=======
 
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
 import { useRef } from "react"
 import Image from "next/image"
 import { Header } from "@/components/header"
@@ -29,28 +26,13 @@ export default function Home() {
 
       {/* Home Section */}
       <div ref={homeRef} className="flex-1 relative min-h-screen">
-<<<<<<< HEAD
-        <video
-          src="/lab-video.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="object-cover w-full h-full absolute top-0 left-0"
+        <Image
+          src="/lab-image.jpg"
+          alt="Laboratory workspace with test tubes and equipment"
+          fill
+          priority
+          className="object-cover"
         />
-=======
-      <video
-  autoPlay
-  loop
-  muted
-  playsInline
-  className="object-cover w-full h-full absolute inset-0 z-[-1]"
->
-  <source src="/lab-video.mp4" type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
-
         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
           <div className="text-center text-white p-8 max-w-4xl">
             <h1 className="text-5xl font-bold mb-6">Welcome to IsuzumaHub</h1>
@@ -62,11 +44,7 @@ export default function Home() {
         </div>
       </div>
 
-<<<<<<< HEAD
-      {/* About Section */}
-=======
       {/* About Section - Now before Gallery */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
       <div ref={aboutRef} className="py-16 px-4 bg-white">
         <div className="container mx-auto">
           <h2 className="text-3xl font-bold mb-8 text-center">About IsuzumaHub</h2>
@@ -88,41 +66,41 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="bg-blue-100 p-6 rounded-lg">
+            <div className="bg-yellow-100 p-6 rounded-lg">
               <h3 className="text-xl font-semibold mb-4">Key Features</h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
-                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Sample tracking and management</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Inventory control and reagent management</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Equipment maintenance scheduling</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Comprehensive reporting and analytics</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>User management with role-based access</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                  <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                     ✓
                   </span>
                   <span>Compliance with industry regulations</span>
@@ -133,20 +111,13 @@ export default function Home() {
         </div>
       </div>
 
-<<<<<<< HEAD
-      {/* Gallery Section */}
-=======
       {/* Gallery Section - Now after About */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
-      <div ref={galleryRef} className="py-16 px-4 bg-blue-300">
+      <div ref={galleryRef} className="py-16 px-4 bg-yellow-300">
         <div className="container mx-auto">
           <h2 className="text-5xl font-bold text-center text-white mb-16">Gallery</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-<<<<<<< HEAD
-=======
             {/* Gallery Image 1 */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-1.jpg"
@@ -156,11 +127,8 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
-<<<<<<< HEAD
-=======
 
             {/* Gallery Image 2 */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-2.jpg"
@@ -170,11 +138,8 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
-<<<<<<< HEAD
-=======
 
             {/* Gallery Image 3 */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-3.jpg"
@@ -184,11 +149,8 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
-<<<<<<< HEAD
-=======
 
             {/* Gallery Image 4 */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-4.jpg"
@@ -198,11 +160,8 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
-<<<<<<< HEAD
-=======
 
             {/* Gallery Image 5 */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-5.jpg"
@@ -212,11 +171,8 @@ export default function Home() {
                 className="w-full h-64 object-cover transition-transform hover:scale-105"
               />
             </div>
-<<<<<<< HEAD
-=======
 
             {/* Gallery Image 6 */}
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
             <div className="overflow-hidden rounded-lg shadow-lg">
               <Image
                 src="/gallery-6.jpg"

@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { ThemeProvider } from "@/components/theme-context"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -8,10 +9,6 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "IsuzumaHub - Laboratory Management System",
   description: "Comprehensive Laboratory Management System for all your lab needs",
-<<<<<<< HEAD
-    generator: 'v0.dev'
-=======
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
 }
 
 export default function RootLayout({
@@ -21,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   )
 }
