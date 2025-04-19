@@ -2,35 +2,51 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { DashboardLayout } from "@/components/dashboard-layout"
+import { AdminLayout } from "@/components/admin-layout"
 import { Eye } from "lucide-react"
 
-// Sample appointment data
-const appointmentData = [
+// Sample approved appointment data
+const approvedAppointmentData = [
   {
     id: 1,
+    appointmentNumber: "917423456",
+    patientName: "Ram",
+    mobileNumber: "8456546546",
+    email: "ram@gmail.com",
+    status: "Approved",
+  },
+  {
+    id: 2,
+    appointmentNumber: "987105601",
+    patientName: "Sonam",
+    mobileNumber: "4554545455",
+    email: "sonam@gmail.com",
+    status: "Approved",
+  },
+  {
+    id: 3,
     appointmentNumber: "44061315",
     patientName: "Anuj kumar",
     mobileNumber: "1234567890",
     email: "shdfhdsgfhg@gmail.com",
-    status: "Not Updated Yet",
+    status: "Approved",
   },
 ]
 
-export default function AppointmentHistoryPage() {
-  const [userName] = useState("Test")
-  const [userEmail] = useState("test-user@gmail.com")
+export default function ApprovedAppointmentsPage() {
+  const [userName] = useState("Test1")
+  const [userEmail] = useState("adminuser@gmail.com")
   const router = useRouter()
 
   const handleViewAppointment = (appointmentNumber: string) => {
-    router.push(`/dashboard/appointment-history/${appointmentNumber}`)
+    router.push(`/dashboard/admin/appointments/view/${appointmentNumber}`)
   }
 
   return (
-    <DashboardLayout userName={userName} userEmail={userEmail} pageTitle="Dashboard">
+    <AdminLayout userName={userName} userEmail={userEmail} pageTitle="Appointments">
       <div className="bg-white rounded-md shadow-sm">
         <div className="p-6 border-b">
-          <h2 className="text-xl font-medium">Appointment Details</h2>
+          <h2 className="text-xl font-medium">Approved Appointment</h2>
         </div>
 
         <div className="overflow-x-auto">
@@ -47,14 +63,18 @@ export default function AppointmentHistoryPage() {
               </tr>
             </thead>
             <tbody>
-              {appointmentData.map((appointment) => (
+              {approvedAppointmentData.map((appointment, index) => (
                 <tr key={appointment.id} className="border-b hover:bg-gray-50">
-                  <td className="py-3 px-4">{appointment.id}</td>
+                  <td className="py-3 px-4">{index + 1}</td>
                   <td className="py-3 px-4">{appointment.appointmentNumber}</td>
                   <td className="py-3 px-4">{appointment.patientName}</td>
                   <td className="py-3 px-4">{appointment.mobileNumber}</td>
                   <td className="py-3 px-4">{appointment.email}</td>
-                  <td className="py-3 px-4">{appointment.status}</td>
+                  <td className="py-3 px-4">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {appointment.status}
+                    </span>
+                  </td>
                   <td className="py-3 px-4">
                     <button
                       onClick={() => handleViewAppointment(appointment.appointmentNumber)}
@@ -81,6 +101,6 @@ export default function AppointmentHistoryPage() {
           </table>
         </div>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   )
 }

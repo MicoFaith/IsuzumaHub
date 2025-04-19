@@ -19,7 +19,11 @@ import {
   Cog,
   BarChart,
   Layers,
+  Sun,
+  Moon,
 } from "lucide-react"
+import { useTheme } from "@/components/theme-context"
+import { ThemeSettings } from "@/components/theme-settings"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -30,8 +34,10 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashboard" }: AdminLayoutProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
+  const [themeSettingsOpen, setThemeSettingsOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  const { theme, toggleTheme } = useTheme()
 
   const handleLogout = () => {
     // In a real app, this would call the logout function from auth context
@@ -47,11 +53,11 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
       {/* Left Sidebar */}
-      <div className="bg-white w-[180px] flex-shrink-0 border-r flex flex-col">
+      <div className="bg-white dark:bg-gray-800 w-[180px] flex-shrink-0 border-r dark:border-gray-700 flex flex-col">
         {/* Logo */}
-        <div className="p-4 flex items-center text-blue-500 border-b">
+        <div className="p-4 flex items-center text-blue-500 border-b dark:border-gray-700">
           <div className="mr-2">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -81,14 +87,14 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
         </div>
 
         {/* User Profile */}
-        <div className="p-4 border-b relative">
+        <div className="p-4 border-b dark:border-gray-700 relative">
           <div className="flex items-center">
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-3">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-500 mr-3">
               <User className="w-6 h-6" />
             </div>
             <div>
-              <div className="font-medium">{userName}</div>
-              <div className="text-sm text-gray-500">{userEmail}</div>
+              <div className="font-medium dark:text-white">{userName}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">{userEmail}</div>
             </div>
             <button className="ml-auto text-gray-400" onClick={() => setDropdownOpen(!dropdownOpen)}>
               <ChevronLeft className={`w-4 h-4 transform ${dropdownOpen ? "rotate-90" : "-rotate-90"}`} />
@@ -97,24 +103,24 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
 
           {/* Dropdown Menu */}
           {dropdownOpen && (
-            <div className="absolute left-0 right-0 mt-2 bg-white shadow-md z-10 border">
+            <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-gray-800 shadow-md z-10 border dark:border-gray-700">
               <Link
                 href="/dashboard/admin/profile"
-                className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
+                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <User className="w-4 h-4 mr-2" />
                 Profile
               </Link>
               <Link
                 href="/dashboard/admin/settings"
-                className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100"
+                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <Cog className="w-4 h-4 mr-2" />
                 Settings
               </Link>
               <button
                 onClick={handleLogout}
-                className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
+                className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -124,15 +130,15 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1">
+        <nav className="flex-1 overflow-y-auto">
           <ul className="py-2">
             <li>
               <Link
                 href="/dashboard/admin"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -146,8 +152,8 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
                 href="/dashboard/admin/test"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin/test")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -161,8 +167,8 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
                 href="/dashboard/admin/lab-employee"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin/lab-employee")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -176,8 +182,8 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
                 href="/dashboard/admin/appointments"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin/appointments")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -191,8 +197,8 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
                 href="/dashboard/admin/lab"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin/lab")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -206,8 +212,8 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
                 href="/dashboard/admin/reg-users"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin/reg-users")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -221,8 +227,8 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
                 href="/dashboard/admin/search"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin/search")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -236,8 +242,8 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
                 href="/dashboard/admin/report"
                 className={`flex items-center px-4 py-2 ${
                   isActive("/dashboard/admin/report")
-                    ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <div className="w-6 flex justify-center mr-3">
@@ -249,7 +255,7 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
           </ul>
         </nav>
 
-        <div className="p-4 text-xs text-gray-500 text-center border-t">
+        <div className="p-4 text-xs text-gray-500 dark:text-gray-400 text-center border-t dark:border-gray-700">
           Online Diagnostic Lab Management System © {new Date().getFullYear()}
         </div>
       </div>
@@ -263,21 +269,24 @@ export function AdminLayout({ children, userName, userEmail, pageTitle = "Dashbo
             <span>{pageTitle}</span>
           </Link>
           <div className="ml-auto flex items-center space-x-4">
-            <button className="p-1">
-              <Bell className="w-5 h-5" />
+            <button className="p-1" onClick={toggleTheme}>
+              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             <button className="p-1">
               <Bell className="w-5 h-5" />
             </button>
-            <button className="p-1">
+            <button className="p-1" onClick={() => setThemeSettingsOpen(true)}>
               <Settings className="w-5 h-5" />
             </button>
           </div>
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-4 bg-gray-100">{children}</main>
+        <main className="flex-1 overflow-auto p-4 bg-gray-100 dark:bg-gray-900">{children}</main>
       </div>
+
+      {/* Theme Settings Modal */}
+      <ThemeSettings isOpen={themeSettingsOpen} onClose={() => setThemeSettingsOpen(false)} />
     </div>
   )
 }

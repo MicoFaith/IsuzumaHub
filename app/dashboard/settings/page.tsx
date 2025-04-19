@@ -1,101 +1,64 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
-import { Cog } from "lucide-react"
 
-export default function ProfilePage() {
-  const [loading, setLoading] = useState(true)
-  const [userData, setUserData] = useState({
-    name: "Test",
-    email: "test-user@gmail.com",
-    contactNumber: "1234567890",
-    registrationDate: "2020-01-19 10:33:27",
-  })
-
-  // Simulate loading user data
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault()
-    // In a real app, this would call an API to update the user profile
-    alert("Profile updated successfully!")
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin">
-          <Cog className="h-8 w-8 text-blue-500" />
-        </div>
-      </div>
-    )
-  }
-
+export default function SettingsPage() {
   return (
-    <DashboardLayout userName={userData.name} userEmail={userData.email} pageTitle="Profile">
+    <DashboardLayout userName="Test" userEmail="test-user@gmail.com" pageTitle="Settings">
       <div className="bg-white p-6 rounded-md shadow-sm">
-        <h2 className="text-xl font-medium mb-6">User Profile</h2>
+        <h2 className="text-xl font-medium mb-6">Settings</h2>
 
-        <form onSubmit={handleUpdate} className="max-w-3xl mx-auto">
-          <div className="mb-4">
-            <label className="block text-gray-500 mb-2">Name:</label>
-            <input
-              type="text"
-              value={userData.name}
-              onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-              className="w-full p-2 border rounded-md bg-gray-100"
-            />
-          </div>
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-6">
+            <h3 className="text-lg font-medium mb-3">Account Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 border rounded-md">
+                <div>
+                  <h4 className="font-medium">Change Password</h4>
+                  <p className="text-sm text-gray-500">Update your password for security</p>
+                </div>
+                <button className="px-4 py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50">
+                  Change
+                </button>
+              </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-500 mb-2">Email:</label>
-            <input
-              type="email"
-              value={userData.email}
-              onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-              className="w-full p-2 border rounded-md bg-gray-100"
-              disabled
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-500 mb-2">Contact Number:</label>
-            <input
-              type="text"
-              value={userData.contactNumber}
-              onChange={(e) => setUserData({ ...userData, contactNumber: e.target.value })}
-              className="w-full p-2 border rounded-md bg-gray-100"
-            />
+              <div className="flex items-center justify-between p-3 border rounded-md">
+                <div>
+                  <h4 className="font-medium">Two-Factor Authentication</h4>
+                  <p className="text-sm text-gray-500">Add an extra layer of security</p>
+                </div>
+                <button className="px-4 py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50">
+                  Enable
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="mb-6">
-            <label className="block text-gray-500 mb-2">Registration Date:</label>
-            <input
-              type="text"
-              value={userData.registrationDate}
-              className="w-full p-2 border rounded-md bg-gray-100"
-              disabled
-            />
-          </div>
+            <h3 className="text-lg font-medium mb-3">Notification Settings</h3>
+            <div className="space-y-4">
+              <div className="flex items-center p-3 border rounded-md">
+                <input type="checkbox" id="email-notifications" className="mr-3 h-4 w-4" defaultChecked />
+                <div>
+                  <label htmlFor="email-notifications" className="font-medium">
+                    Email Notifications
+                  </label>
+                  <p className="text-sm text-gray-500">Receive email notifications for appointments and test results</p>
+                </div>
+              </div>
 
-          <div>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-            >
-              Update
-            </button>
+              <div className="flex items-center p-3 border rounded-md">
+                <input type="checkbox" id="sms-notifications" className="mr-3 h-4 w-4" />
+                <div>
+                  <label htmlFor="sms-notifications" className="font-medium">
+                    SMS Notifications
+                  </label>
+                  <p className="text-sm text-gray-500">Receive SMS notifications for appointments and test results</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
     </DashboardLayout>
   )

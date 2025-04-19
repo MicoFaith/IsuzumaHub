@@ -21,41 +21,41 @@ export default function AboutPage() {
               the tools you need to increase efficiency and maintain compliance.
             </p>
           </div>
-          <div className="bg-blue-100 p-6 rounded-lg">
+          <div className="bg-yellow-100 p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Key Features</h2>
             <ul className="space-y-2">
               <li className="flex items-start">
-                <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                   ✓
                 </span>
                 <span>Sample tracking and management</span>
               </li>
               <li className="flex items-start">
-                <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                   ✓
                 </span>
                 <span>Inventory control and reagent management</span>
               </li>
               <li className="flex items-start">
-                <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                   ✓
                 </span>
                 <span>Equipment maintenance scheduling</span>
               </li>
               <li className="flex items-start">
-                <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                   ✓
                 </span>
                 <span>Comprehensive reporting and analytics</span>
               </li>
               <li className="flex items-start">
-                <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                   ✓
                 </span>
                 <span>User management with role-based access</span>
               </li>
               <li className="flex items-start">
-                <span className="bg-blue-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
+                <span className="bg-yellow-400 text-black rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5">
                   ✓
                 </span>
                 <span>Compliance with industry regulations</span>

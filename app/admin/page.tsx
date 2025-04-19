@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 "use client"
 
 import type React from "react"
@@ -64,7 +63,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
               />
-              <div className="absolute right-2 top-3 text-blue-400">
+              <div className="absolute right-2 top-3 text-yellow-400">
                 <Lightbulb size={20} />
               </div>
             </div>
@@ -127,10 +126,4 @@ export default function AdminLoginPage() {
       </div>
     </div>
   )
-=======
-import { LoginForm } from "@/components/login-form"
-
-export default function AdminLoginPage() {
-  return <LoginForm title="Sign In With Your Admin Account" redirectTo="/dashboard/admin" />
->>>>>>> 78240d95df05eb70a7c1f09f313a3f9211787d64
 }
