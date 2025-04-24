@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
@@ -24,15 +23,24 @@ import {
 } from "lucide-react"
 import { useTheme } from "@/components/theme-context"
 import { ThemeSettings } from "@/components/theme-settings"
+import axios from "axios"
+
+// Configure axios to include credentials for session management
+axios.defaults.withCredentials = true
 
 interface DashboardLayoutProps {
   children: React.ReactNode
-  userName: string
-  userEmail: string
+  userName?: string
+  userEmail?: string
   pageTitle?: string
 }
 
-export function DashboardLayout({ children, userName, userEmail, pageTitle = "Dashboard" }: DashboardLayoutProps) {
+export function DashboardLayout({
+  children,
+  userName: initialUserName,
+  userEmail: initialUserEmail,
+  pageTitle = "Dashboard",
+}: DashboardLayoutProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
@@ -40,7 +48,43 @@ export function DashboardLayout({ children, userName, userEmail, pageTitle = "Da
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const profileDropdownRef = useRef<HTMLDivElement>(null)
   const { theme, toggleTheme } = useTheme()
+  const [userName, setUserName] = useState(initialUserName || "User")
+  const [userEmail, setUserEmail] = useState(initialUserEmail || "")
+  const [userRole, setUserRole] = useState("USER")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(true)
 
+  // Fetch user data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        console.log("Fetching user data from /dashboard")
+        const response = await axios.get("http://localhost:8081/dashboard", {
+          withCredentials: true,
+        })
+        console.log("Dashboard response status:", response.status)
+        console.log("Dashboard response data:", response.data)
+        const { fullName, email, role } = response.data
+        setUserName(fullName)
+        setUserEmail(email)
+        setUserRole(role)
+      } catch (err: any) {
+        console.error("Failed to fetch user data:", err)
+        console.log("Error response:", err.response ? err.response.data : "No response data")
+        console.log("Error status:", err.response ? err.response.status : "No status")
+        setError("Failed to load user data. Please log in again.")
+        setTimeout(() => {
+          router.push("/auth")
+        }, 2000)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserData()
+  }, [router])
+
+  // Handle clicks outside the profile dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
@@ -54,17 +98,30 @@ export function DashboardLayout({ children, userName, userEmail, pageTitle = "Da
     }
   }, [])
 
-  const handleLogout = () => {
-    // In a real app, this would call the logout function from auth context
-    router.push("/auth")
+  const handleLogout = async () => {
+    try {
+      console.log("Logging out")
+      await axios.post("http://localhost:8081/logout")
+      router.push("/auth")
+    } catch (err: any) {
+      console.error("Logout failed:", err)
+      router.push("/auth")
+    }
   }
 
   // Update the isActive function to handle dynamic routes
   const isActive = (path: string) => {
     if (pathname === path) return true
-    // For dynamic routes like /dashboard/test-detail/[id]
     if (path === "/dashboard/test-detail" && pathname.startsWith("/dashboard/test-detail/")) return true
     return false
+  }
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>
+  }
+
+  if (error) {
+    return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>
   }
 
   return (
@@ -235,6 +292,23 @@ export function DashboardLayout({ children, userName, userEmail, pageTitle = "Da
                 Search
               </Link>
             </li>
+            {userRole === "ADMIN" && (
+              <li>
+                <Link
+                  href="/dashboard/admin/users"
+                  className={`flex items-center px-4 py-2 ${
+                    isActive("/dashboard/admin/users")
+                      ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <div className="w-6 flex justify-center mr-3">
+                    <User className="w-5 h-5" />
+                  </div>
+                  Manage Users
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -301,7 +375,10 @@ export function DashboardLayout({ children, userName, userEmail, pageTitle = "Da
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-4 bg-gray-100">{children}</main>
+        <main className="flex-1 overflow-auto p-4 bg-gray-100">
+          {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">{error}</div>}
+          {children}
+        </main>
       </div>
       <ThemeSettings isOpen={themeSettingsOpen} onClose={() => setThemeSettingsOpen(false)} />
     </div>

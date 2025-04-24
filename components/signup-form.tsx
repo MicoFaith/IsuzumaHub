@@ -4,71 +4,56 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Home, Lightbulb } from "lucide-react"
+import { Home, User, Mail, Lock, Phone } from "lucide-react"
 import axios from "axios"
 
-// Configure axios to include credentials for session management
-axios.defaults.withCredentials = true
-
-interface LoginFormProps {
+interface SignupFormProps {
   title: string
   redirectTo?: string
 }
 
-export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) {
+export function SignupForm({ title, redirectTo = "/auth" }: SignupFormProps) {
   const router = useRouter()
+  const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
+  const [mobileNumber, setMobileNumber] = useState("")
   const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setError("")
 
-    try {
-      const formData = new FormData()
-      formData.append("email", email)
-      formData.append("password", password)
+    // Basic validation
+    if (!fullName || !email || !mobileNumber || !password || !confirmPassword) {
+      setError("All fields are required")
+      return
+    }
 
-      const response = await axios.post("http://localhost:8081/auth", formData, {
-        maxRedirects: 0,
-        validateStatus: (status) => status >= 200 && status < 400,
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      // Make API call to the backend
+      const response = await axios.post("http://localhost:8081/auth/signup", {
+        fullName,
+        email,
+        mobileNumber,
+        password,
+        confirmPassword,
       })
 
-      console.log("Login response status:", response.status)
-      console.log("Login response headers:", response.headers)
-
-      if (response.status === 302) {
-        let redirectUrl = response.headers.location
-        console.log("Redirected to:", redirectUrl)
-
-        redirectUrl = new URL(redirectUrl, "http://localhost:8081").pathname
-        console.log("Normalized redirectUrl:", redirectUrl)
-
-        const redirectResponse = await axios.get(`http://localhost:8081${redirectUrl}`, {
-          withCredentials: true,
-        })
-
-        console.log("Redirect response:", redirectResponse.data)
-
-        if (redirectUrl === "/auth/success") {
-          console.log("Redirecting to:", redirectTo)
-          router.push(redirectTo)
-          console.log("After router.push")
-        } else if (redirectUrl === "/auth/error") {
-          setError(redirectResponse.data.message || "Invalid email or password. Please try again.")
-        } else {
-          setError("Unexpected redirect URL: " + redirectUrl)
-        }
-      } else {
-        setError("Unexpected response from server: " + response.status)
-      }
+      // On success, redirect to login page
+      router.push(redirectTo)
     } catch (err: any) {
-      console.error("Login error:", err)
-      setError(err.response?.data?.message || "Login failed. Please try again.")
+      // Handle errors (e.g., email already exists)
+      setError(err.response?.data?.message || "Failed to create account. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -108,38 +93,67 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="relative">
               <input
+                type="text"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
+              />
+              <div className="absolute right-2 top-3 text-gray-400">
+                <User size={20} />
+              </div>
+            </div>
+
+            <div className="relative">
+              <input
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
               />
-              <div className="absolute right-2 top-3 text-yellow-400">
-                <Lightbulb size={20} />
+              <div className="absolute right-2 top-3 text-gray-400">
+                <Mail size={20} />
               </div>
             </div>
 
-            <div>
+            <div className="relative">
+              <input
+                type="tel"
+                placeholder="Mobile Number"
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
+                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
+              />
+              <div className="absolute right-2 top-3 text-gray-400">
+                <Phone size={20} />
+              </div>
+            </div>
+
+            <div className="relative">
               <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors"
+                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
               />
+              <div className="absolute right-2 top-3 text-gray-400">
+                <Lock size={20} />
+              </div>
             </div>
 
-            <div className="flex items-center">
+            <div className="relative">
               <input
-                type="checkbox"
-                id="remember-me"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600">
-                Keep me signed in
-              </label>
+              <div className="absolute right-2 top-3 text-gray-400">
+                <Lock size={20} />
+              </div>
             </div>
 
             <button
@@ -169,21 +183,20 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Signing in...
+                  Creating account...
                 </>
               ) : (
-                "SIGN IN"
+                "SIGN UP"
               )}
             </button>
           </form>
         </div>
 
-        <div className="mt-6 text-center space-y-3">
-          <button className="text-white hover:underline text-sm">FORGOT YOUR PASSWORD?</button>
+        <div className="mt-6 text-center">
           <p className="text-white">
-            Don't have an account?{" "}
-            <Link href="/auth/signup" className="font-medium hover:underline">
-              Sign Up
+            Already have an account?{" "}
+            <Link href="/auth" className="font-medium hover:underline">
+              Sign In
             </Link>
           </p>
         </div>
