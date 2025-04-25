@@ -5,11 +5,10 @@ import { DashboardLayout } from "@/components/dashboard-layout"
 import { Cog } from "lucide-react"
 
 export default function UserDashboard() {
-  const [userName, setUserName] = useState("Test")
-  const [userEmail, setUserEmail] = useState("test-user@gmail.com")
+  const [userName, setUserName] = useState("User")
+  const [userEmail, setUserEmail] = useState("")
   const [loading, setLoading] = useState(true)
 
-  // Simulate loading user data
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false)
@@ -34,7 +33,6 @@ export default function UserDashboard() {
         <h2 className="text-xl text-blue-600 font-medium">Welcome to IsuzumaHub!! {userName}</h2>
       </div>
 
-      {/* Empty content area to match the design */}
       <div className="h-[500px]"></div>
     </DashboardLayout>
   )

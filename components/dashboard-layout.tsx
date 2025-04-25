@@ -25,7 +25,6 @@ import { useTheme } from "@/components/theme-context"
 import { ThemeSettings } from "@/components/theme-settings"
 import axios from "axios"
 
-// Configure axios to include credentials for session management
 axios.defaults.withCredentials = true
 
 interface DashboardLayoutProps {
@@ -54,7 +53,6 @@ export function DashboardLayout({
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(true)
 
-  // Fetch user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -84,7 +82,6 @@ export function DashboardLayout({
     fetchUserData()
   }, [router])
 
-  // Handle clicks outside the profile dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
@@ -109,7 +106,6 @@ export function DashboardLayout({
     }
   }
 
-  // Update the isActive function to handle dynamic routes
   const isActive = (path: string) => {
     if (pathname === path) return true
     if (path === "/dashboard/test-detail" && pathname.startsWith("/dashboard/test-detail/")) return true
@@ -126,9 +122,7 @@ export function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Left Sidebar */}
       <div className="bg-white w-[180px] flex-shrink-0 border-r flex flex-col">
-        {/* Logo */}
         <div className="p-4 flex items-center text-blue-500 border-b">
           <div className="mr-2">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -158,7 +152,6 @@ export function DashboardLayout({
           <span className="text-xl font-semibold">IsuzumaHub</span>
         </div>
 
-        {/* User Profile */}
         <div className="p-4 border-b relative">
           <div className="flex items-center">
             <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mr-3">
@@ -173,7 +166,6 @@ export function DashboardLayout({
             </button>
           </div>
 
-          {/* Dropdown Menu */}
           {dropdownOpen && (
             <div className="absolute left-0 right-0 mt-2 bg-white shadow-md z-10 border">
               <Link href="/" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
@@ -199,7 +191,6 @@ export function DashboardLayout({
           )}
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1">
           <ul className="py-2">
             <li>
@@ -317,9 +308,7 @@ export function DashboardLayout({
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Header */}
         <header className="bg-blue-500 text-white h-12 flex items-center px-4">
           <Link href="/dashboard" className="flex items-center">
             <ChevronLeft className="w-5 h-5 mr-2" />
@@ -374,7 +363,6 @@ export function DashboardLayout({
           </div>
         </header>
 
-        {/* Content Area */}
         <main className="flex-1 overflow-auto p-4 bg-gray-100">
           {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">{error}</div>}
           {children}

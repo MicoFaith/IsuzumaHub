@@ -1,13 +1,12 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Home, Lightbulb } from "lucide-react"
 import axios from "axios"
 
-// Configure axios to include credentials for session management
 axios.defaults.withCredentials = true
 
 interface LoginFormProps {
@@ -23,54 +22,97 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
+  useEffect(() => {
+    console.log("[DEBUG] Current form state - email:", email, "password:", password);
+  }, [email, password]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError("")
 
+    if (!email || !password) {
+      setError("Please enter both email and password.")
+      setLoading(false)
+      return
+    }
+
     try {
       const formData = new FormData()
-      formData.append("email", email)
+      formData.append("email", email.trim().toLowerCase())
       formData.append("password", password)
+
+      console.log("[DEBUG] Sending login request with email:", email, "password:", password)
 
       const response = await axios.post("http://localhost:8081/auth", formData, {
         maxRedirects: 0,
         validateStatus: (status) => status >= 200 && status < 400,
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       })
 
-      console.log("Login response status:", response.status)
-      console.log("Login response headers:", response.headers)
+      console.log("[DEBUG] Login response status:", response.status)
+      console.log("[DEBUG] Login response headers:", response.headers)
 
       if (response.status === 302) {
-        let redirectUrl = response.headers.location
-        console.log("Redirected to:", redirectUrl)
+        const redirectUrl = response.headers.location
+        console.log("[DEBUG] Redirected to:", redirectUrl)
 
-        redirectUrl = new URL(redirectUrl, "http://localhost:8081").pathname
-        console.log("Normalized redirectUrl:", redirectUrl)
+        const normalizedRedirectUrl = new URL(redirectUrl, "http://localhost:8081").pathname
+        console.log("[DEBUG] Normalized redirect URL:", normalizedRedirectUrl)
 
-        const redirectResponse = await axios.get(`http://localhost:8081${redirectUrl}`, {
+        const redirectResponse = await axios.get(`http://localhost:8081${normalizedRedirectUrl}`, {
           withCredentials: true,
         })
 
-        console.log("Redirect response:", redirectResponse.data)
+        console.log("[DEBUG] Redirect response:", redirectResponse.data)
 
-        if (redirectUrl === "/auth/success") {
-          console.log("Redirecting to:", redirectTo)
+        if (normalizedRedirectUrl === "/auth/success") {
+          console.log("[DEBUG] Login successful, redirecting to:", redirectTo)
+          
+          if (rememberMe) {
+            localStorage.setItem("isuzumahub_remember_me", "true")
+          } else {
+            localStorage.removeItem("isuzumahub_remember_me")
+          }
+
           router.push(redirectTo)
-          console.log("After router.push")
-        } else if (redirectUrl === "/auth/error") {
+        } else if (normalizedRedirectUrl === "/auth/error") {
           setError(redirectResponse.data.message || "Invalid email or password. Please try again.")
         } else {
-          setError("Unexpected redirect URL: " + redirectUrl)
+          setError("Unexpected redirect URL: " + normalizedRedirectUrl)
         }
       } else {
+        console.log("[DEBUG] Unexpected response data:", response.data)
         setError("Unexpected response from server: " + response.status)
       }
     } catch (err: any) {
-      console.error("Login error:", err)
-      setError(err.response?.data?.message || "Login failed. Please try again.")
+      console.error("[ERROR] Login error:", err)
+      setError(
+        err.response?.data?.message ||
+        err.message ||
+        "Login failed. Please check your connection and try again."
+      )
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email to reset your password.")
+      return
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8081/auth/forgot-password", { email }, {
+        withCredentials: true,
+      })
+      setError(response.data.message)
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to send password reset request.")
     }
   }
 
@@ -109,10 +151,12 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
             <div className="relative">
               <input
                 type="email"
+                name="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
+                required
               />
               <div className="absolute right-2 top-3 text-yellow-400">
                 <Lightbulb size={20} />
@@ -122,10 +166,12 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
             <div>
               <input
                 type="password"
+                name="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors"
+                required
               />
             </div>
 
@@ -179,7 +225,9 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
         </div>
 
         <div className="mt-6 text-center space-y-3">
-          <button className="text-white hover:underline text-sm">FORGOT YOUR PASSWORD?</button>
+          <button onClick={handleForgotPassword} className="text-white hover:underline text-sm">
+            FORGOT YOUR PASSWORD?
+          </button>
           <p className="text-white">
             Don't have an account?{" "}
             <Link href="/auth/signup" className="font-medium hover:underline">
