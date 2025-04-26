@@ -5,6 +5,7 @@ import com.isuzumahub.backend.repository.UserRepository;
 import com.isuzumahub.backend.security.UserDetailsImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,6 +53,9 @@ public class UserService implements UserDetailsService {
     }
 
     public User createUser(User user) {
+        // Ensure only USER role is assigned during registration
+        user.getRoles().clear();
+        user.addRole("USER");
         return userRepository.save(user);
     }
 
@@ -69,13 +73,33 @@ public class UserService implements UserDetailsService {
 
     public void addRole(Long userId, String role) {
         User user = getUserById(userId);
+        // Only allow adding ADMIN or EMPLOYEE roles through this method
+        if (!role.equals("ADMIN") && !role.equals("EMPLOYEE")) {
+            throw new AccessDeniedException("Cannot add role: " + role);
+        }
         user.addRole(role);
         userRepository.save(user);
     }
 
     public void removeRole(Long userId, String role) {
         User user = getUserById(userId);
+        // Prevent removing the USER role
+        if (role.equals("USER")) {
+            throw new AccessDeniedException("Cannot remove USER role");
+        }
         user.removeRole(role);
         userRepository.save(user);
+    }
+
+    public boolean isAdmin(User user) {
+        return user.hasRole("ADMIN");
+    }
+
+    public boolean isEmployee(User user) {
+        return user.hasRole("EMPLOYEE");
+    }
+
+    public boolean isUser(User user) {
+        return user.hasRole("USER");
     }
 } 

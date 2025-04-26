@@ -56,11 +56,20 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers(PUBLIC_URLS).permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                // Protected endpoints
+                
+                // User endpoints
                 .requestMatchers("/api/users/me").authenticated()
-                .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "EMPLOYEE")
-                .requestMatchers("/api/posts/**").authenticated()
-                .requestMatchers("/api/comments/**").authenticated()
+                .requestMatchers("/api/posts/**").hasAnyRole("USER", "ADMIN", "EMPLOYEE")
+                .requestMatchers("/api/comments/**").hasAnyRole("USER", "ADMIN", "EMPLOYEE")
+                
+                // Admin endpoints
+                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                
+                // Employee endpoints
+                .requestMatchers("/api/employee/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                
+                // Default to authenticated
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -85,7 +94,8 @@ public class SecurityConfig {
         ));
         configuration.setExposedHeaders(Arrays.asList(
             "Access-Control-Allow-Origin", 
-            "Access-Control-Allow-Credentials"
+            "Access-Control-Allow-Credentials",
+            "Authorization"
         ));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);

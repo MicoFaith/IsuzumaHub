@@ -68,6 +68,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
+        // Create new user with USER role only
         User user = new User(
             registerRequest.getUsername(),
             registerRequest.getName(),
