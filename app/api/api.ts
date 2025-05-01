@@ -1,6 +1,68 @@
 import axios, { AxiosError } from "axios";
 
-const API_BASE_URL = "http://localhost:8081/api";
+const API_BASE_URL = "http://localhost:8081";
+
+// Types
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  phoneNumber: string;
+  active: boolean;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface SignupRequest {
+  name: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+}
+
+export interface JwtResponse {
+  token: string;
+  user: User;
+}
+
+export interface Appointment {
+  id: number;
+  appointmentNumber: string;
+  patient: User;
+  employee?: User;
+  status: string;
+  appointmentDate: string;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Test {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TestResult {
+  id: number;
+  appointment: Appointment;
+  test: Test;
+  result: string;
+  notes?: string;
+  resultDate: string;
+  employee: User;
+  createdAt: string;
+  updatedAt: string;
+}
 
 // Create axios instance with base configuration
 const api = axios.create({
@@ -31,7 +93,7 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/login";
+      window.location.href = "/auth";
     }
 
     // Handle specific error cases
@@ -49,10 +111,9 @@ api.interceptors.response.use(
 );
 
 // Auth-related API calls
-export const login = async (credentials: {
-  email: string;
-  password: string;
-}) => {
+export const login = async (
+  credentials: LoginRequest
+): Promise<JwtResponse> => {
   try {
     const response = await api.post("/auth/login", credentials);
     const { token, user } = response.data;
@@ -64,210 +125,261 @@ export const login = async (credentials: {
   }
 };
 
-export const register = async (userData: {
-  name: string;
-  email: string;
-  password: string;
-}) => {
+export const signup = async (userData: SignupRequest): Promise<JwtResponse> => {
   try {
-    const response = await api.post("/auth/register", userData);
+    const response = await api.post("/auth/signup", userData);
     const { token, user } = response.data;
     localStorage.setItem("token", token);
     return { token, user };
   } catch (error) {
-    console.error("Error registering:", error);
+    console.error("Error signing up:", error);
     throw error;
   }
 };
 
-export const logout = async () => {
+export const adminLogin = async (
+  credentials: LoginRequest
+): Promise<JwtResponse> => {
   try {
-    await api.post("/auth/logout");
-  } finally {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+    const response = await api.post("/auth/admin/login", credentials);
+    const { token, user } = response.data;
+    localStorage.setItem("token", token);
+    return { token, user };
+  } catch (error) {
+    console.error("Error logging in as admin:", error);
+    throw error;
   }
 };
 
-// Post-related API calls
-export const getPosts = async () => {
+export const employeeLogin = async (
+  credentials: LoginRequest
+): Promise<JwtResponse> => {
   try {
-    const response = await api.get("/posts");
+    const response = await api.post("/auth/employee/login", credentials);
+    const { token, user } = response.data;
+    localStorage.setItem("token", token);
+    return { token, user };
+  } catch (error) {
+    console.error("Error logging in as employee:", error);
+    throw error;
+  }
+};
+
+// Appointment-related API calls
+export const bookAppointment = async (
+  appointment: Omit<
+    Appointment,
+    "id" | "appointmentNumber" | "status" | "createdAt" | "updatedAt"
+  >
+): Promise<Appointment> => {
+  try {
+    const response = await api.post("/dashboard/book-appointment", appointment);
     return response.data;
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    console.error("Error booking appointment:", error);
     throw error;
   }
 };
 
-export const createPost = async (postData: {
-  title: string;
-  content: string;
-}) => {
+export const getMyAppointments = async (): Promise<Appointment[]> => {
   try {
-    const response = await api.post("/posts", postData);
+    const response = await api.get("/dashboard/appointments");
     return response.data;
   } catch (error) {
-    console.error("Error creating post:", error);
+    console.error("Error fetching appointments:", error);
     throw error;
   }
 };
 
-export const updatePost = async (
+// Admin appointment management
+export const getAppointmentsByStatus = async (
+  status: string
+): Promise<Appointment[]> => {
+  try {
+    const response = await api.get(`/dashboard/admin/appointments/${status}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching appointments by status:", error);
+    throw error;
+  }
+};
+
+export const updateAppointmentStatus = async (
   id: number,
-  postData: { title: string; content: string }
-) => {
+  status: string
+): Promise<Appointment> => {
   try {
-    const response = await api.put(`/posts/${id}`, postData);
+    const response = await api.put(
+      `/dashboard/admin/appointments/${id}/status`,
+      status
+    );
     return response.data;
   } catch (error) {
-    console.error("Error updating post:", error);
+    console.error("Error updating appointment status:", error);
     throw error;
   }
 };
 
-export const deletePost = async (id: number) => {
+// Employee appointment management
+export const getEmployeeAppointments = async (
+  status: string
+): Promise<Appointment[]> => {
   try {
-    await api.delete(`/posts/${id}`);
-    return true;
-  } catch (error) {
-    console.error("Error deleting post:", error);
-    throw error;
-  }
-};
-
-// Comment-related API calls
-export const getComments = async (postId: number) => {
-  try {
-    const response = await api.get(`/comments/post/${postId}`);
+    const response = await api.get(
+      `/dashboard/employee/appointments/${status}`
+    );
     return response.data;
   } catch (error) {
-    console.error("Error fetching comments:", error);
+    console.error("Error fetching employee appointments:", error);
     throw error;
   }
 };
 
-export const createComment = async (commentData: {
-  content: string;
-  postId: number;
-}) => {
+export const markAppointmentCollected = async (
+  id: number
+): Promise<Appointment> => {
   try {
-    const response = await api.post("/comments", commentData);
+    const response = await api.put(
+      `/dashboard/employee/appointments/${id}/collect`
+    );
     return response.data;
   } catch (error) {
-    console.error("Error creating comment:", error);
+    console.error("Error marking appointment as collected:", error);
     throw error;
   }
 };
 
-export const updateComment = async (
+// Test management
+export const createTest = async (
+  test: Omit<Test, "id" | "createdAt" | "updatedAt">
+): Promise<Test> => {
+  try {
+    const response = await api.post("/dashboard/admin/test", test);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating test:", error);
+    throw error;
+  }
+};
+
+export const updateTest = async (
   id: number,
-  commentData: { content: string }
-) => {
+  test: Partial<Test>
+): Promise<Test> => {
   try {
-    const response = await api.put(`/comments/${id}`, commentData);
+    const response = await api.put(`/dashboard/admin/test/${id}`, test);
     return response.data;
   } catch (error) {
-    console.error("Error updating comment:", error);
+    console.error("Error updating test:", error);
     throw error;
   }
 };
 
-export const deleteComment = async (id: number) => {
+export const deleteTest = async (id: number): Promise<void> => {
   try {
-    await api.delete(`/comments/${id}`);
-    return true;
+    await api.delete(`/dashboard/admin/test/${id}`);
   } catch (error) {
-    console.error("Error deleting comment:", error);
+    console.error("Error deleting test:", error);
     throw error;
   }
 };
 
-// User-related API calls
-export const getCurrentUser = async () => {
+export const getAllTests = async (): Promise<Test[]> => {
   try {
-    const response = await api.get("/users/me");
+    const response = await api.get("/dashboard/admin/test");
     return response.data;
   } catch (error) {
-    console.error("Error fetching current user:", error);
+    console.error("Error fetching all tests:", error);
     throw error;
   }
 };
 
-export const updateUser = async (userData: { name: string; email: string }) => {
+export const getActiveTests = async (): Promise<Test[]> => {
   try {
-    const response = await api.put("/users/me", userData);
+    const response = await api.get("/dashboard/employee/test-detail");
     return response.data;
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error fetching active tests:", error);
     throw error;
   }
 };
 
-// Example usage in components:
-/*
-import { 
-  login, register, logout, 
-  getPosts, createPost, updatePost, deletePost,
-  getComments, createComment, updateComment, deleteComment,
-  getCurrentUser, updateUser 
-} from '@/app/api/api';
-
-// Auth flow
-const handleLogin = async (credentials) => {
+// Test result management
+export const addTestResult = async (
+  testResult: Omit<TestResult, "id" | "createdAt" | "updatedAt">
+): Promise<TestResult> => {
   try {
-    const { token, user } = await login(credentials);
-    // Handle successful login
+    const response = await api.post(
+      "/dashboard/employee/test-result",
+      testResult
+    );
+    return response.data;
   } catch (error) {
-    // Handle error
+    console.error("Error adding test result:", error);
+    throw error;
   }
 };
 
-const handleRegister = async (userData) => {
+// Report generation
+export const getSalesReport = async (
+  startDate: string,
+  endDate: string
+): Promise<any> => {
   try {
-    const { token, user } = await register(userData);
-    // Handle successful registration
+    const response = await api.get("/dashboard/admin/report/sales", {
+      params: { startDate, endDate },
+    });
+    return response.data;
   } catch (error) {
-    // Handle error
+    console.error("Error generating sales report:", error);
+    throw error;
   }
 };
 
-const handleLogout = async () => {
+export const getEmployeeReport = async (
+  startDate: string,
+  endDate: string
+): Promise<any> => {
   try {
-    await logout();
-    // Handle successful logout
+    const response = await api.get("/dashboard/admin/report/employee", {
+      params: { startDate, endDate },
+    });
+    return response.data;
   } catch (error) {
-    // Handle error
+    console.error("Error generating employee report:", error);
+    throw error;
   }
 };
 
-// Post flow
-const handleCreatePost = async (postData) => {
+export const getSampleCollectionReport = async (
+  startDate: string,
+  endDate: string
+): Promise<any> => {
   try {
-    const post = await createPost(postData);
-    // Handle successful post creation
+    const response = await api.get(
+      "/dashboard/employee/report/sample-collection",
+      {
+        params: { startDate, endDate },
+      }
+    );
+    return response.data;
   } catch (error) {
-    // Handle error
+    console.error("Error generating sample collection report:", error);
+    throw error;
   }
 };
 
-// Comment flow
-const handleCreateComment = async (commentData) => {
+export const getPerformanceReport = async (
+  startDate: string,
+  endDate: string
+): Promise<any> => {
   try {
-    const comment = await createComment(commentData);
-    // Handle successful comment creation
+    const response = await api.get("/dashboard/employee/report/performance", {
+      params: { startDate, endDate },
+    });
+    return response.data;
   } catch (error) {
-    // Handle error
+    console.error("Error generating performance report:", error);
+    throw error;
   }
 };
-
-// User flow
-const handleUpdateProfile = async (userData) => {
-  try {
-    const user = await updateUser(userData);
-    // Handle successful profile update
-  } catch (error) {
-    // Handle error
-  }
-};
-*/

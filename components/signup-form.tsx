@@ -1,75 +1,120 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Home, User, Mail, Lock, Phone } from "lucide-react"
-import axios from "axios"
+import type React from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Home, User, Mail, Lock, Phone } from "lucide-react";
+import axios from "axios";
 
 interface SignupFormProps {
-  title: string
-  redirectTo?: string
+  title: string;
+  redirectTo?: string;
 }
 
 export function SignupForm({ title, redirectTo = "/auth" }: SignupFormProps) {
-  const router = useRouter()
-  const [fullName, setFullName] = useState("")
-  const [email, setEmail] = useState("")
-  const [mobileNumber, setMobileNumber] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const router = useRouter();
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
-    // Basic validation
     if (!fullName || !email || !mobileNumber || !password || !confirmPassword) {
-      setError("All fields are required")
-      return
+      setError("All fields are required");
+      return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      return
+      setError("Passwords do not match");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
-      // Make API call to the backend
-      const response = await axios.post("http://localhost:8081/auth/signup", {
-        fullName,
-        email,
-        mobileNumber,
-        password,
-        confirmPassword,
-      })
+      const signupData = {
+        fullName: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        mobileNumber: mobileNumber.trim(),
+        password: password,
+        confirmPassword: confirmPassword,
+      };
 
-      // On success, redirect to login page
-      router.push(redirectTo)
+      const response = await axios.post(
+        "http://localhost:8081/auth/signup",
+        signupData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        router.push(redirectTo); // Redirects to /auth (login page)
+      } else {
+        setError("Failed to create account. Please try again.");
+      }
     } catch (err: any) {
-      // Handle errors (e.g., email already exists)
-      setError(err.response?.data?.message || "Failed to create account. Please try again.")
+      console.error("Signup error:", err);
+
+      if (err.response) {
+        switch (err.response.status) {
+          case 400:
+            setError(
+              err.response.data?.message ||
+                "Invalid input data. Please check your information."
+            );
+            break;
+          case 409:
+            setError("An account with this email already exists.");
+            break;
+          default:
+            setError(
+              err.response.data?.message ||
+                "Failed to create account. Please try again."
+            );
+        }
+      } else if (err.request) {
+        setError(
+          "Unable to connect to the server. Please check if the backend is running on port 8081."
+        );
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-blue-500 flex flex-col items-center justify-center p-4">
       <div className="absolute top-4 left-4">
-        <Link href="/" className="text-white p-3 border border-white/30 rounded-md inline-flex">
+        <Link
+          href="/"
+          className="text-white p-3 border border-white/30 rounded-md inline-flex"
+        >
           <Home className="h-5 w-5" />
         </Link>
       </div>
 
       <div className="text-white mb-8 flex items-center">
         <div className="mr-2">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M12 2L2 7L12 12L22 7L12 2Z"
               stroke="white"
@@ -77,8 +122,20 @@ export function SignupForm({ title, redirectTo = "/auth" }: SignupFormProps) {
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M2 17L12 22L22 17"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M2 12L12 17L22 12"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
         <h1 className="text-2xl font-semibold">IsuzumaHub</h1>
@@ -88,7 +145,11 @@ export function SignupForm({ title, redirectTo = "/auth" }: SignupFormProps) {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-xl text-gray-600 text-center mb-8">{title}</h2>
 
-          {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">{error}</div>}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="relative">
@@ -202,5 +263,5 @@ export function SignupForm({ title, redirectTo = "/auth" }: SignupFormProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

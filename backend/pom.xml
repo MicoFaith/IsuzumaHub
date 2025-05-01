@@ -12,10 +12,10 @@
     </parent>
     
     <groupId>com.isuzumahub</groupId>
-    <artifactId>backend</artifactId>
+    <artifactId>isuzumahub-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>IsuzumaHub Backend</name>
-    <description>Backend for IsuzumaHub application</description>
+    <name>isuzumahub-backend</name>
+    <description>Backend for IsuzumaHub Lab Diagnostic Management System</description>
     
     <properties>
         <java.version>17</java.version>

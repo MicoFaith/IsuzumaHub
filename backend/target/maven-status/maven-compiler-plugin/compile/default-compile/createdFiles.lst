@@ -1,0 +1,17 @@
+com\isuzumahub\repository\RoleRepository.class
+com\isuzumahub\repository\AppointmentRepository.class
+com\isuzumahub\IsuzumaHubApplication.class
+com\isuzumahub\entity\Appointment$AppointmentStatus.class
+com\isuzumahub\repository\TestRepository.class
+com\isuzumahub\dto\LoginRequestDTO.class
+com\isuzumahub\entity\User.class
+com\isuzumahub\dto\UserDTO.class
+com\isuzumahub\repository\UserRepository.class
+com\isuzumahub\entity\Test.class
+com\isuzumahub\entity\Role.class
+com\isuzumahub\dto\SignupRequestDTO.class
+com\isuzumahub\mapper\UserMapper.class
+com\isuzumahub\entity\Appointment.class
+com\isuzumahub\security\JwtTokenProvider.class
+com\isuzumahub\dto\JwtResponseDTO.class
+com\isuzumahub\controller\AuthController.class

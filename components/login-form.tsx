@@ -1,132 +1,174 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Home, Lightbulb } from "lucide-react"
-import axios from "axios"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Home, Lightbulb } from "lucide-react";
+import axios from "axios";
 
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true;
 
 interface LoginFormProps {
-  title: string
-  redirectTo?: string
+  title: string;
+  redirectTo?: string;
 }
 
-export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+export function LoginForm({
+  title,
+  redirectTo = "/dashboard",
+}: LoginFormProps) {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log("[DEBUG] Current form state - email:", email, "password:", password);
+    console.log(
+      "[DEBUG] Current form state - email:",
+      email,
+      "password:",
+      password
+    );
   }, [email, password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     if (!email || !password) {
-      setError("Please enter both email and password.")
-      setLoading(false)
-      return
+      setError("Please enter both email and password.");
+      setLoading(false);
+      return;
     }
 
     try {
-      const formData = new FormData()
-      formData.append("email", email.trim().toLowerCase())
-      formData.append("password", password)
+      const loginData = {
+        email: email.trim().toLowerCase(),
+        password: password,
+      };
 
-      console.log("[DEBUG] Sending login request with email:", email, "password:", password)
+      console.log("Attempting to connect to:", "http://localhost:8081/auth/login");
 
-      const response = await axios.post("http://localhost:8081/auth", formData, {
-        maxRedirects: 0,
-        validateStatus: (status) => status >= 200 && status < 400,
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      })
-
-      console.log("[DEBUG] Login response status:", response.status)
-      console.log("[DEBUG] Login response headers:", response.headers)
-
-      if (response.status === 302) {
-        const redirectUrl = response.headers.location
-        console.log("[DEBUG] Redirected to:", redirectUrl)
-
-        const normalizedRedirectUrl = new URL(redirectUrl, "http://localhost:8081").pathname
-        console.log("[DEBUG] Normalized redirect URL:", normalizedRedirectUrl)
-
-        const redirectResponse = await axios.get(`http://localhost:8081${normalizedRedirectUrl}`, {
+      const response = await axios.post(
+        "http://localhost:8081/auth/login",
+        loginData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
           withCredentials: true,
-        })
-
-        console.log("[DEBUG] Redirect response:", redirectResponse.data)
-
-        if (normalizedRedirectUrl === "/auth/success") {
-          console.log("[DEBUG] Login successful, redirecting to:", redirectTo)
-          
-          if (rememberMe) {
-            localStorage.setItem("isuzumahub_remember_me", "true")
-          } else {
-            localStorage.removeItem("isuzumahub_remember_me")
-          }
-
-          router.push(redirectTo)
-        } else if (normalizedRedirectUrl === "/auth/error") {
-          setError(redirectResponse.data.message || "Invalid email or password. Please try again.")
-        } else {
-          setError("Unexpected redirect URL: " + normalizedRedirectUrl)
+          timeout: 5000,
         }
+      );
+
+      console.log("Response received:", response.status, response.data);
+      console.log("Response headers:", response.headers); // Debug: Check for Set-Cookie header
+
+      if (response.status === 200) {
+        if (rememberMe) {
+          localStorage.setItem("isuzumahub_remember_me", "true");
+          localStorage.setItem("user_email", response.data.email);
+        } else {
+          localStorage.removeItem("isuzumahub_remember_me");
+          localStorage.removeItem("user_email");
+        }
+
+        window.location.href = redirectTo;
       } else {
-        console.log("[DEBUG] Unexpected response data:", response.data)
-        setError("Unexpected response from server: " + response.status)
+        setError("Invalid response from server. Please try again.");
       }
     } catch (err: any) {
-      console.error("[ERROR] Login error:", err)
-      setError(
-        err.response?.data?.message ||
-        err.message ||
-        "Login failed. Please check your connection and try again."
-      )
+      console.error("Login error details:", {
+        message: err.message,
+        code: err.code,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
+
+      if (err.code === "ECONNABORTED") {
+        setError("Request timed out. Please check if the server is running.");
+      } else if (err.code === "ERR_NETWORK") {
+        setError(
+          "Cannot connect to the server. Please ensure the backend is running on port 8081."
+        );
+      } else if (err.response) {
+        switch (err.response.status) {
+          case 401:
+            setError("Invalid email or password. Please try again.");
+            break;
+          case 403:
+            setError("Your account has been disabled. Please contact support.");
+            break;
+          case 404:
+            setError("Account not found. Please check your email.");
+            break;
+          default:
+            setError(
+              err.response.data?.message ||
+                "An error occurred during login. Please try again."
+            );
+        }
+      } else if (err.request) {
+        setError(
+          "Unable to connect to the server. Please check if the backend is running on port 8081."
+        );
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleForgotPassword = async () => {
     if (!email) {
-      setError("Please enter your email to reset your password.")
-      return
+      setError("Please enter your email to reset your password.");
+      return;
     }
 
     try {
-      const response = await axios.post("http://localhost:8081/auth/forgot-password", { email }, {
-        withCredentials: true,
-      })
-      setError(response.data.message)
+      const response = await axios.post(
+        "http://localhost:8081/auth/forgot-password",
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      setError(response.data.message);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to send password reset request.")
+      setError(
+        err.response?.data?.message || "Failed to send password reset request."
+      );
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-blue-500 flex flex-col items-center justify-center p-4">
       <div className="absolute top-4 left-4">
-        <Link href="/" className="text-white p-3 border border-white/30 rounded-md inline-flex">
+        <Link
+          href="/"
+          className="text-white p-3 border border-white/30 rounded-md inline-flex"
+        >
           <Home className="h-5 w-5" />
         </Link>
       </div>
 
       <div className="text-white mb-8 flex items-center">
         <div className="mr-2">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M12 2L2 7L12 12L22 7L12 2Z"
               stroke="white"
@@ -134,8 +176,20 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M2 17L12 22L22 17"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M2 12L12 17L22 12"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </div>
         <h1 className="text-2xl font-semibold">IsuzumaHub</h1>
@@ -145,7 +199,11 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
         <div className="bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-xl text-gray-600 text-center mb-8">{title}</h2>
 
-          {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">{error}</div>}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="relative">
@@ -183,7 +241,10 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600">
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-600"
+              >
                 Keep me signed in
               </label>
             </div>
@@ -225,7 +286,10 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
         </div>
 
         <div className="mt-6 text-center space-y-3">
-          <button onClick={handleForgotPassword} className="text-white hover:underline text-sm">
+          <button
+            onClick={handleForgotPassword}
+            className="text-white hover:underline text-sm"
+          >
             FORGOT YOUR PASSWORD?
           </button>
           <p className="text-white">
@@ -237,5 +301,5 @@ export function LoginForm({ title, redirectTo = "/dashboard" }: LoginFormProps) 
         </div>
       </div>
     </div>
-  )
+  );
 }
