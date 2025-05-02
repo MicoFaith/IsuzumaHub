@@ -12,11 +12,15 @@ axios.defaults.withCredentials = true;
 interface LoginFormProps {
   title: string;
   redirectTo?: string;
+  showSignUpLink?: boolean;
+  expectedRole?: string;
 }
 
 export function LoginForm({
   title,
   redirectTo = "/dashboard",
+  showSignUpLink = true,
+  expectedRole,
 }: LoginFormProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -45,16 +49,23 @@ export function LoginForm({
       return;
     }
 
+    let loginEndpoint = "http://localhost:8081/auth/login";
+    if (expectedRole === "ADMIN") {
+      loginEndpoint = "http://localhost:8081/auth/admin-login";
+    } else if (expectedRole === "EMPLOYEE") {
+      loginEndpoint = "http://localhost:8081/auth/employee-login";
+    }
+
     try {
       const loginData = {
         email: email.trim().toLowerCase(),
         password: password,
       };
 
-      console.log("Attempting to connect to:", "http://localhost:8081/auth/login");
+      console.log("Attempting to connect to:", loginEndpoint);
 
       const response = await axios.post(
-        "http://localhost:8081/auth/login",
+        loginEndpoint,
         loginData,
         {
           headers: {
@@ -66,9 +77,26 @@ export function LoginForm({
       );
 
       console.log("Response received:", response.status, response.data);
-      console.log("Response headers:", response.headers); // Debug: Check for Set-Cookie header
+      console.log("Response headers:", response.headers);
 
       if (response.status === 200) {
+        const { role } = response.data;
+        let finalRedirect = redirectTo;
+
+        if (expectedRole && role !== expectedRole) {
+          setError(`This page is for ${expectedRole.toLowerCase()}s only. Your role is ${role.toLowerCase()}.`);
+          setLoading(false);
+          return;
+        }
+
+        if (role === "ADMIN") {
+          finalRedirect = "/dashboard/admin";
+        } else if (role === "EMPLOYEE") {
+          finalRedirect = "/dashboard/employee";
+        } else if (role === "USER") {
+          finalRedirect = "/dashboard";
+        }
+
         if (rememberMe) {
           localStorage.setItem("isuzumahub_remember_me", "true");
           localStorage.setItem("user_email", response.data.email);
@@ -77,7 +105,7 @@ export function LoginForm({
           localStorage.removeItem("user_email");
         }
 
-        window.location.href = redirectTo;
+        router.push(finalRedirect);
       } else {
         setError("Invalid response from server. Please try again.");
       }
@@ -101,7 +129,7 @@ export function LoginForm({
             setError("Invalid email or password. Please try again.");
             break;
           case 403:
-            setError("Your account has been disabled. Please contact support.");
+            setError(err.response.data?.message || "Access denied.");
             break;
           case 404:
             setError("Account not found. Please check your email.");
@@ -213,7 +241,7 @@ export function LoginForm({
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10"
+                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10 bg-white text-black"
                 required
               />
               <div className="absolute right-2 top-3 text-yellow-400">
@@ -228,7 +256,7 @@ export function LoginForm({
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors"
+                className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors bg-white text-black"
                 required
               />
             </div>
@@ -292,12 +320,14 @@ export function LoginForm({
           >
             FORGOT YOUR PASSWORD?
           </button>
-          <p className="text-white">
-            Don't have an account?{" "}
-            <Link href="/auth/signup" className="font-medium hover:underline">
-              Sign Up
-            </Link>
-          </p>
+          {showSignUpLink && (
+            <p className="text-white">
+              Don’t have an account?{" "}
+              <Link href="/auth/signup" className="font-medium hover:underline">
+                Sign Up
+              </Link>
+            </p>
+          )}
         </div>
       </div>
     </div>

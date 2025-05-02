@@ -1,5 +1,5 @@
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/components/login-form";
 
-export default function EmployeeLoginPage() {
-  return <LoginForm title="Sign In With Your Employee Account" redirectTo="/dashboard/employee" />
+export default function EmLoginPage() {
+  return <LoginForm title="Sign In As Employee" redirectTo="/dashboard/employee" showSignUpLink={false} expectedRole="EMPLOYEE" />;
 }

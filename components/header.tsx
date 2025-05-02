@@ -30,9 +30,7 @@ export function Header({ onHomeClick, onAboutClick, onGalleryClick }: HeaderProp
             <NavButton onClick={onHomeClick}>Home</NavButton>
             <NavButton onClick={onAboutClick}>About Us</NavButton>
             <NavButton onClick={onGalleryClick}>Gallery</NavButton>
-            <NavLink href="/admin">Admin</NavLink>
-            <NavLink href="/auth">Users</NavLink>
-            <NavLink href="/employee">Employee</NavLink>
+            <NavLink href="/auth">Sign In</NavLink>
           </nav>
 
           {/* Mobile menu button */}
@@ -49,9 +47,7 @@ export function Header({ onHomeClick, onAboutClick, onGalleryClick }: HeaderProp
             <MobileNavButton onClick={onHomeClick}>Home</MobileNavButton>
             <MobileNavButton onClick={onAboutClick}>About Us</MobileNavButton>
             <MobileNavButton onClick={onGalleryClick}>Gallery</MobileNavButton>
-            <MobileNavLink href="/admin">Admin</MobileNavLink>
-            <MobileNavLink href="/auth">Users</MobileNavLink>
-            <MobileNavLink href="/employee">Employee</MobileNavLink>
+            <MobileNavLink href="/auth">Sign In</MobileNavLink>
           </div>
         </div>
       )}
