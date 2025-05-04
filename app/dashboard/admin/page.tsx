@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { AdminLayout } from "@/components/admin-layout"
 import { Cog, User, Calendar, FileText, AlertCircle, CheckCircle, XCircle, Database, Eye } from "lucide-react"
+import axios from "axios"
 
 // Sample notification data
 const notificationData = [
@@ -101,10 +102,18 @@ const statsData = [
   },
 ]
 
+interface UserProfile {
+  email: string;
+  role: string;
+  fullName: string;
+}
+
 export default function AdminDashboardPage() {
   const [userName, setUserName] = useState("Test1")
   const [userEmail, setUserEmail] = useState("adminuser@gmail.com")
   const [loading, setLoading] = useState(true)
+  const [profileLoading, setProfileLoading] = useState(true)
+  const [error, setError] = useState("")
 
   // Simulate loading data
   useEffect(() => {
@@ -115,11 +124,41 @@ export default function AdminDashboardPage() {
     return () => clearTimeout(timer)
   }, [])
 
+  // Fetch user profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get("http://localhost:8081/api/admin/me", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+
+        if (response.status === 200) {
+          const { email, fullName } = response.data;
+          setUserEmail(email);
+          setUserName(fullName);
+        } else {
+          setError("Failed to fetch profile.");
+        }
+      } catch (err: any) {
+        setError(
+          err.response?.data?.message || "An error occurred while fetching profile."
+        );
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
   const handleViewAppointment = (appointmentNumber: string) => {
     window.location.href = `/dashboard/admin/appointments/${appointmentNumber}`
   }
 
-  if (loading) {
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="animate-spin">
@@ -181,6 +220,11 @@ export default function AdminDashboardPage() {
           ))}
         </div>
       </div>
+      {error && (
+        <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+          {error}
+        </div>
+      )}
     </AdminLayout>
   )
 }

@@ -25,8 +25,6 @@ import { useTheme } from "@/components/theme-context"
 import { ThemeSettings } from "@/components/theme-settings"
 import axios from "axios"
 
-axios.defaults.withCredentials = true
-
 interface DashboardLayoutProps {
   children: React.ReactNode
   userName?: string
@@ -49,27 +47,48 @@ export function DashboardLayout({
   const { theme, toggleTheme } = useTheme()
   const [userName, setUserName] = useState(initialUserName || "User")
   const [userEmail, setUserEmail] = useState(initialUserEmail || "")
-  const [userRole, setUserRole] = useState("USER")
+  const [userRole, setUserRole] = useState(sessionStorage.getItem("user_role") || "USER")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        console.log("Fetching user data from /dashboard")
-        const response = await axios.get("http://localhost:8081/dashboard", {
-          withCredentials: true,
+        const token = sessionStorage.getItem("auth_token")
+        if (!token) {
+          console.log("[DEBUG] No JWT token found in sessionStorage")
+          throw new Error("No authentication token found")
+        }
+
+        let dashboardEndpoint = "http://localhost:8081/dashboard"
+        if (userRole === "ADMIN") {
+          dashboardEndpoint = "http://localhost:8081/dashboard/admin"
+        } else if (userRole === "EMPLOYEE") {
+          dashboardEndpoint = "http://localhost:8081/dashboard/employee"
+        }
+
+        console.log("[DEBUG] Fetching user data from:", dashboardEndpoint)
+        console.log("[DEBUG] Using token:", token)
+
+        const response = await axios.get(dashboardEndpoint, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         })
-        console.log("Dashboard response status:", response.status)
-        console.log("Dashboard response data:", response.data)
+
+        console.log("[DEBUG] Dashboard response status:", response.status)
+        console.log("[DEBUG] Dashboard response data:", response.data)
+
         const { fullName, email, role } = response.data
         setUserName(fullName)
         setUserEmail(email)
         setUserRole(role)
+        sessionStorage.setItem("user_role", role) // Update role in case it changed
       } catch (err: any) {
-        console.error("Failed to fetch user data:", err)
-        console.log("Error response:", err.response ? err.response.data : "No response data")
-        console.log("Error status:", err.response ? err.response.status : "No status")
+        console.error("[ERROR] Failed to fetch user data:", err)
+        console.log("[DEBUG] Error response:", err.response ? err.response.data : "No response data")
+        console.log("[DEBUG] Error status:", err.response ? err.response.status : "No status")
         setError("Failed to load user data. Please log in again.")
         setTimeout(() => {
           router.push("/auth")
@@ -80,7 +99,7 @@ export function DashboardLayout({
     }
 
     fetchUserData()
-  }, [router])
+  }, [router, userRole])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -95,15 +114,16 @@ export function DashboardLayout({
     }
   }, [])
 
-  const handleLogout = async () => {
-    try {
-      console.log("Logging out")
-      await axios.post("http://localhost:8081/logout")
-      router.push("/auth")
-    } catch (err: any) {
-      console.error("Logout failed:", err)
-      router.push("/auth")
-    }
+  const handleLogout = () => {
+    console.log("[DEBUG] Logging out")
+    // Clear sessionStorage
+    sessionStorage.removeItem("isuzumahub_remember_me")
+    sessionStorage.removeItem("user_email")
+    sessionStorage.removeItem("user_fullName")
+    sessionStorage.removeItem("user_role")
+    sessionStorage.removeItem("auth_token")
+    delete axios.defaults.headers.common["Authorization"]
+    router.push("/auth")
   }
 
   const isActive = (path: string) => {
@@ -297,6 +317,23 @@ export function DashboardLayout({
                     <User className="w-5 h-5" />
                   </div>
                   Manage Users
+                </Link>
+              </li>
+            )}
+            {userRole === "EMPLOYEE" && (
+              <li>
+                <Link
+                  href="/dashboard/employee/tasks"
+                  className={`flex items-center px-4 py-2 ${
+                    isActive("/dashboard/employee/tasks")
+                      ? "text-blue-500 bg-blue-50 border-l-4 border-blue-500"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <div className="w-6 flex justify-center mr-3">
+                    <FileText className="w-5 h-5" />
+                  </div>
+                  Assigned Tasks
                 </Link>
               </li>
             )}

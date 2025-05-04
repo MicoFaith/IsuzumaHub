@@ -7,8 +7,6 @@ import Link from "next/link";
 import { Home, Lightbulb } from "lucide-react";
 import axios from "axios";
 
-axios.defaults.withCredentials = true;
-
 interface LoginFormProps {
   title: string;
   redirectTo?: string;
@@ -28,32 +26,42 @@ export function LoginForm({
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     console.log(
       "[DEBUG] Current form state - email:",
       email,
       "password:",
-      password
+      password,
+      "rememberMe:",
+      rememberMe
     );
-  }, [email, password]);
+  }, [email, password, rememberMe]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) {
+      console.log("[DEBUG] Form submission blocked: already submitting");
+      return;
+    }
+
+    setIsSubmitting(true);
     setLoading(true);
     setError("");
 
     if (!email || !password) {
       setError("Please enter both email and password.");
       setLoading(false);
+      setIsSubmitting(false);
       return;
     }
 
-    let loginEndpoint = "http://localhost:8081/auth/login";
+    let loginEndpoint = "http://localhost:8081/api/login";
     if (expectedRole === "ADMIN") {
-      loginEndpoint = "http://localhost:8081/auth/admin-login";
+      loginEndpoint = "http://localhost:8081/api/admin-login";
     } else if (expectedRole === "EMPLOYEE") {
-      loginEndpoint = "http://localhost:8081/auth/employee-login";
+      loginEndpoint = "http://localhost:8081/api/employee-login";
     }
 
     try {
@@ -62,55 +70,67 @@ export function LoginForm({
         password: password,
       };
 
-      console.log("Attempting to connect to:", loginEndpoint);
+      console.log("[DEBUG] Sending login request to:", loginEndpoint);
+      console.log("[DEBUG] Login payload:", loginData);
 
-      const response = await axios.post(
-        loginEndpoint,
-        loginData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-          timeout: 5000,
-        }
-      );
+      const response = await axios.post(loginEndpoint, loginData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        timeout: 10000,
+      });
 
-      console.log("Response received:", response.status, response.data);
-      console.log("Response headers:", response.headers);
+      console.log("[DEBUG] Response received:", response.status, response.data);
+      console.log("[DEBUG] Response headers:", response.headers);
 
       if (response.status === 200) {
-        const { role } = response.data;
-        let finalRedirect = redirectTo;
+        const { email, role, fullName, token } = response.data;
 
         if (expectedRole && role !== expectedRole) {
           setError(`This page is for ${expectedRole.toLowerCase()}s only. Your role is ${role.toLowerCase()}.`);
           setLoading(false);
+          setIsSubmitting(false);
           return;
         }
 
+        let finalRedirect = redirectTo;
         if (role === "ADMIN") {
           finalRedirect = "/dashboard/admin";
         } else if (role === "EMPLOYEE") {
           finalRedirect = "/dashboard/employee";
         } else if (role === "USER") {
           finalRedirect = "/dashboard";
+        } else {
+          setError("Invalid role received from server.");
+          setLoading(false);
+          setIsSubmitting(false);
+          return;
         }
+
+        console.log("[DEBUG] Storing user data in sessionStorage");
+        sessionStorage.setItem("user_email", email);
+        sessionStorage.setItem("user_fullName", fullName);
+        sessionStorage.setItem("user_role", role);
+        sessionStorage.setItem("auth_token", token);
 
         if (rememberMe) {
-          localStorage.setItem("isuzumahub_remember_me", "true");
-          localStorage.setItem("user_email", response.data.email);
+          sessionStorage.setItem("isuzumahub_remember_me", "true");
         } else {
-          localStorage.removeItem("isuzumahub_remember_me");
-          localStorage.removeItem("user_email");
+          sessionStorage.removeItem("isuzumahub_remember_me");
         }
 
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        console.log("[DEBUG] Set Axios Authorization header with token");
+
+        console.log("[DEBUG] Redirecting to:", finalRedirect);
         router.push(finalRedirect);
       } else {
         setError("Invalid response from server. Please try again.");
+        setLoading(false);
+        setIsSubmitting(false);
       }
     } catch (err: any) {
-      console.error("Login error details:", {
+      console.error("[ERROR] Login error details:", {
         message: err.message,
         code: err.code,
         response: err.response?.data,
@@ -149,6 +169,7 @@ export function LoginForm({
       }
     } finally {
       setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -160,13 +181,12 @@ export function LoginForm({
 
     try {
       const response = await axios.post(
-        "http://localhost:8081/auth/forgot-password",
+        "http://localhost:8081/api/forgot-password",
         { email },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
         }
       );
       setError(response.data.message);
@@ -243,6 +263,7 @@ export function LoginForm({
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors pr-10 bg-white text-black"
                 required
+                disabled={loading}
               />
               <div className="absolute right-2 top-3 text-yellow-400">
                 <Lightbulb size={20} />
@@ -258,6 +279,7 @@ export function LoginForm({
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border-b border-gray-300 focus:border-blue-500 outline-none transition-colors bg-white text-black"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -268,6 +290,7 @@ export function LoginForm({
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                disabled={loading}
               />
               <label
                 htmlFor="remember-me"
@@ -279,8 +302,8 @@ export function LoginForm({
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md transition-colors flex items-center justify-center"
+              disabled={loading || isSubmitting}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md transition-colors flex items-center justify-center disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -317,6 +340,7 @@ export function LoginForm({
           <button
             onClick={handleForgotPassword}
             className="text-white hover:underline text-sm"
+            disabled={loading}
           >
             FORGOT YOUR PASSWORD?
           </button>

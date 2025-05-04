@@ -48,7 +48,7 @@ export function SignupForm({ title, redirectTo = "/auth" }: SignupFormProps) {
       };
 
       const response = await axios.post(
-        "http://localhost:8081/auth/signup",
+        "http://localhost:8081/api/signup",
         signupData,
         {
           headers: {
